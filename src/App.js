@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_CHARACTERS } from './queries'; 
-import { translations } from './translations'; 
-import FilterStatus from './components/FilterStatus'; 
-import FilterSpecies from './components/FilterSpecies'; 
+import { GET_CHARACTERS } from './queries';
+import { translations } from './translations';
+import FilterStatus from './components/FilterStatus';
+import FilterSpecies from './components/FilterSpecies';
 import Sort from './components/Sort';
 import './App.css';
 
@@ -19,7 +19,7 @@ function App() {
 
   const { loading, error, data, fetchMore } = useQuery(GET_CHARACTERS, {
     variables: { page: currentPage, status, species },
-    notifyOnNetworkStatusChange: true, 
+    notifyOnNetworkStatusChange: true,
   });
 
   const lastCharacterElementRef = useRef();
@@ -27,7 +27,7 @@ function App() {
   const getStatusTranslation = (status) => {
     if (status === 'Alive') return translations[language].alive;
     if (status === 'Dead') return translations[language].dead;
-    return translations[language].unknown; 
+    return translations[language].unknown;
   };
 
   const sortedCharacters = (characters) => {
@@ -45,9 +45,9 @@ function App() {
 
     const handleScroll = (entries) => {
       const [entry] = entries;
-      if (entry.isIntersecting) {
+      if (entry.isIntersecting && !loadingMore) {
         setLoadingMore(true);
-        setCurrentPage((prev) => prev + 1);
+        setCurrentPage((prev) => prev + 1); 
       }
     };
 
@@ -63,7 +63,7 @@ function App() {
     }
 
     return () => observerInstance.disconnect();
-  }, [data, loadingMore]);
+  }, [data, loadingMore]);  
 
   useEffect(() => {
     if (loadingMore) {
@@ -76,14 +76,31 @@ function App() {
       }).then(({ data: newData }) => {
         setLoadingMore(false);
         if (newData && newData.characters && newData.characters.results) {
-          setAllCharacters((prevCharacters) => [
-            ...prevCharacters,
-            ...newData.characters.results,
-          ]);
+          setAllCharacters((prevCharacters) => {
+            const newCharacters = newData.characters.results;
+            const uniqueCharacters = [
+              ...prevCharacters,
+              ...newCharacters.filter((newCharacter) =>
+                !prevCharacters.some((prevCharacter) => prevCharacter.id === newCharacter.id)
+              ),
+            ];
+            return uniqueCharacters;
+          });
         }
       });
     }
   }, [currentPage, fetchMore, loadingMore, status, species]);
+
+  useEffect(() => {
+    setAllCharacters([]);   
+    setCurrentPage(1);       
+  }, [status, species, sortBy]);
+
+  useEffect(() => {
+    if (data && currentPage === 1) {
+      setAllCharacters(data.characters.results); 
+    }
+  }, [data, currentPage]);
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
@@ -92,14 +109,6 @@ function App() {
     setDropdownOpen(false);
   };
 
-  useEffect(() => {
-    setAllCharacters([]); 
-    setCurrentPage(1); 
-  }, [status, species, sortBy]);
-
-  if (loading && currentPage === 1) return <p>{translations[language].loading}</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
   const characters = allCharacters || [];
 
   return (
@@ -107,29 +116,35 @@ function App() {
       <h1>{translations[language].title}</h1>
 
       <div className="filters">
-        <FilterStatus status={status} setStatus={setStatus} /> 
-        <FilterSpecies species={species} setSpecies={setSpecies} /> 
+        <FilterStatus status={status} setStatus={setStatus} />
+        <FilterSpecies species={species} setSpecies={setSpecies} />
         <Sort sortBy={sortBy} setSortBy={setSortBy} />
       </div>
 
       <div className="character-list">
-        {sortedCharacters(characters).map((character) => (
-          <div key={character.id} className="character-card">
-            <h2>{character.name}</h2>
-            <p>
-              <strong>{translations[language].status}:</strong> {getStatusTranslation(character.status)}
-            </p>
-            <p>
-              <strong>{translations[language].species}:</strong> {character.species}
-            </p>
-            <p>
-              <strong>{translations[language].gender}:</strong> {character.gender}
-            </p>
-            <p>
-              <strong>{translations[language].origin}:</strong> {character.origin.name}
-            </p>
-          </div>
-        ))}
+        {loading && currentPage === 1 ? (
+          <p>{translations[language].loading}</p>
+        ) : error ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          sortedCharacters(characters).map((character) => (
+            <div key={`${character.id}-${character.name}`} className="character-card">
+              <h2>{character.name}</h2>
+              <p>
+                <strong>{translations[language].status}:</strong> {getStatusTranslation(character.status)}
+              </p>
+              <p>
+                <strong>{translations[language].species}:</strong> {character.species}
+              </p>
+              <p>
+                <strong>{translations[language].gender}:</strong> {character.gender}
+              </p>
+              <p>
+                <strong>{translations[language].origin}:</strong> {character.origin.name}
+              </p>
+            </div>
+          ))
+        )}
       </div>
 
       {loadingMore && <p>{translations[language].loadingMore}</p>}
