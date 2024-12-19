@@ -1,0 +1,108 @@
+.App {
+  text-align: center;
+}
+
+.filters {
+  margin-bottom: 20px;
+}
+
+.filters label {
+  margin: 0 10px;
+}
+
+.character-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.character-card {
+  width: 200px;
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.character-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.pagination {
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+footer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000; 
+}
+
+.language-button {
+  padding: 10px 15px;
+  font-size: 14px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative; 
+}
+
+
+.language-dropdown {
+  position: absolute;
+  bottom: 100%; 
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  z-index: 1001; 
+  list-style-type: none;
+  padding: 10px 0;
+  margin: 0;
+}
+
+.language-dropdown li {
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.language-dropdown li:hover {
+  background-color: #f1f1f1;
+}
+
+.language-dropdown li {
+  margin: 0;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.language-dropdown li:hover {
+  background-color: #eee;
+}
+
+
