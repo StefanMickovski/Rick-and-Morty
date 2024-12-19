@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_CHARACTERS } from './queries'; 
 import { translations } from './translations'; 
-import Filter from './components/Filter';
+import FilterStatus from './components/FilterStatus'; 
+import FilterSpecies from './components/FilterSpecies'; 
 import Sort from './components/Sort';
 import './App.css';
 
@@ -106,7 +107,8 @@ function App() {
       <h1>{translations[language].title}</h1>
 
       <div className="filters">
-        <Filter status={status} setStatus={setStatus} species={species} setSpecies={setSpecies} />
+        <FilterStatus status={status} setStatus={setStatus} /> 
+        <FilterSpecies species={species} setSpecies={setSpecies} /> 
         <Sort sortBy={sortBy} setSortBy={setSortBy} />
       </div>
 
